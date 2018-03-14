@@ -325,11 +325,15 @@ public class CWLCommandLineBuilder implements ProtocolCommandLineBuilder {
 
       List<Object> flattenedValues = commandLinePart.flatten();
 
-      /*
       if (itemSeparator != null) {
         String joinedItems = Joiner.on(itemSeparator).join(flattenedValues);
         if (prefix == null) {
-          return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).part(joinedItems).build();
+          List<Object> prefixedValues = new ArrayList<>();
+          for (Object arrayItem : flattenedValues) {
+            prefixedValues.add(itemSeparator);
+            prefixedValues.add(arrayItem);
+          }
+          return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).parts(prefixedValues).build();
         }
         if (StringUtils.isWhitespace(separator) && separator.length() > 0) {
           return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).part(prefix).part(joinedItems).build();
@@ -346,41 +350,6 @@ public class CWLCommandLineBuilder implements ProtocolCommandLineBuilder {
         prefixedValues.add(arrayItem);
       }
       return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).parts(prefixedValues).build();
-      */
-
-     if (prefix == null) {
-         if (itemSeparator == null) {
-            return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).parts(flattenedValues).build();
-         }
-         else {
-            List<Object> prefixedValues = new ArrayList<>();
-            for (Object arrayItem : flattenedValues) {
-              prefixedValues.add(itemSeparator);
-              prefixedValues.add(arrayItem);
-            }
-            return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).parts(prefixedValues).build();
-         }
-      }
-      else {
-         if (itemSeparator == null) {
-            List<Object> prefixedValues = new ArrayList<>();
-            prefixedValues.add(prefix);
-            for (Object arrayItem : flattenedValues) {
-              prefixedValues.add(arrayItem);
-            }
-            return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).parts(prefixedValues).build();
-         }
-         else {
-            String joinedItems = Joiner.on(itemSeparator).join(flattenedValues);
-            if (StringUtils.isWhitespace(separator) && separator.length() > 0) { 
-               return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).part(prefix).part(joinedItems).build();
-            }
-            else {
-               return new CWLCommandLinePart.Builder(position, isFile).keyValue(keyValue).part(prefix + separator + joinedItems).build();
-            }
-         }
-      }
-
     }
 
     boolean shellQuote = isShellQuote(job, inputBinding);
